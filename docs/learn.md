@@ -87,6 +87,7 @@ dispatch(fetchData({
 3. 使用 Generator 来处理异步流程，用同步的方式书写异步代码
 
 ## redux 怎样关联 redux-saga
+**store.js**
 ```js
 /* store.js */
 import { createStore, applyMiddleware, compose } from 'redux'
@@ -114,15 +115,56 @@ const store = createStore(
   storeEnhancers
 )
 
-// sagas - 启动对 rootSaga 中对 action 的监听
+// sagas - 开启 sagaMiddleware 对 rootSaga 中 action 的监听
 sagaMiddleware.run(rootSaga)
 
 export default store
 ```
+上面的代码主要做了一下几点：
+1. 创建 saga 中间件： `const sagaMiddleware = createSagaMiddleware()`
+2. 将 saga中间件应用到 redux 中：`applyMiddleware(...middlewares)`
+3. 开启 sagaMiddleware 对 rootSaga 中 action 的监听
 
+**rootSaga.js**   
+```js
+import { delay } from 'redux-saga'
+import { put, takeEvery, all, call } from 'redux-saga/effects'
 
+export function* helloSaga() {
+  console.log('Hello Sagas!');
+}
+
+// Our worker Saga: 将异步执行 increment 任务
+export function* incrementAsync() {
+  yield call(delay, 1000)
+  yield put({ type: 'INCREMENT' })
+}
+
+// Our watcher Saga: 在每个 INCREMENT_ASYNC action 调用后，派生一个新的 incrementAsync 任务
+export function* watchIncrementAsync() {
+  console.log('watchIncrementAsync')
+  yield takeEvery('INCREMENT_ASYNC', incrementAsync)
+}
+
+// notice how we now only export the rootSaga
+// single entry point to start all Sagas at once
+export default function* rootSaga() {
+  yield all([
+    helloSaga(),
+    watchIncrementAsync()
+  ])
+}
+```
+`sagaMiddleware.run(rootSaga)` 会执行 rootSaga 进行一些初始化操作，并对 rootSaga 中指定的 action 进行监听。
+
+**saga监听工作流程图**
+![](./01.jpg)
+简要分析工作流程：
+1. 每次执行 store.dispatch(action)，数据流都会经过 sagaMiddleware
+2. 如果 sagaMiddleware 匹配到对应的 action.type 进行处理
 
 ## redux-saga 使用实例
+利用 sagaMiddleware 的监听和 saga 是 generator 的特性我们可以更加方便的处理逻辑，以下是一些具体的示例：
 ### 日志记录
 
 ### 登陆流程的业务流简化
