@@ -7,6 +7,7 @@
     "test": "babel-node sagas.spec.js | tap-spec",
     "01-basic": "budo 01-basic/index.js:build.js --dir ./ --verbose  --live -- -t babelify",
     "02-log": "budo 02-log/index.js:build.js --dir ./ --verbose  --live -- -t babelify",
+    "03-login": "budo 03-login/index.js:build.js --dir ./ --verbose  --live -- -t babelify"
   },
   "repository": {
     "type": "git",
