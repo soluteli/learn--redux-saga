@@ -1,4 +1,4 @@
-# redux-saga 助力 redux 的异步操作
+# 花式使用 redux-saga 
 本文的思路借鉴了[Redux-Saga 漫谈](https://zhuanlan.zhihu.com/p/35437092?group_id=966592505576407040)，我主要整理了一些 **redux-saga 的使用实例**
 ## redux-saga 是什么？
 redux-saga 可以更加优雅的管理 Redux 应用程序中的**副作用（Side Effects）**。   
@@ -155,13 +155,13 @@ export default function* rootSaga() {
   ])
 }
 ```
-`sagaMiddleware.run(rootSaga)` 会执行 rootSaga 进行一些初始化操作，并对 rootSaga 中指定的 action 进行监听。
+`sagaMiddleware.run(rootSaga)` 开启监听时会执行 rootSaga （在 rootSaga 中可以进行一些初始化操作）。
 
 **saga监听工作流程图**
 ![](./01.jpg)
 简要分析工作流程：
 1. 每次执行 store.dispatch(action)，数据流都会经过 sagaMiddleware
-2. 如果 sagaMiddleware 匹配到对应的 action.type 进行处理
+2. 对 sagaMiddleware 匹配到 action.type 执行对应 saga 函数内的逻辑
 
 ## redux-saga 使用实例
 利用 sagaMiddleware 的监听和 saga 是 generator 的特性我们可以更加方便的处理逻辑，以下是一些具体的示例：
